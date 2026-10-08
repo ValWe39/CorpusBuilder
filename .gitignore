@@ -17,3 +17,16 @@ Examples/
 !.specify/memory/
 !.specify/assessments/
 !.specify/bugs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# État local de l'outil
+counter.txt
