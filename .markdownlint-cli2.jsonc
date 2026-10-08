@@ -1,0 +1,6 @@
+{
+  // Respecte le .gitignore du dépôt : les dossiers ignorés
+  // (Prompts/, .vibe/, input/, output/, .specify/* sauf exceptions)
+  // ne sont pas lintés par markdownlint.
+  "gitignore": true
+}
