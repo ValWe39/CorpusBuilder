@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Vérifie la conformité à la constitution de [OUTIL].
+Vérifie la conformité à la constitution de CorpusBuilder.
 Usage:
   python check_constitution.py          # Vérifie tout le repo
   python check_constitution.py --diff HEAD~1  # Vérifie uniquement les modifications
@@ -201,7 +201,7 @@ def main():
     )
     args = parser.parse_args()
 
-    print("[CONSTITUTION] Verification de la constitution [OUTIL]...")
+    print("[CONSTITUTION] Verification de la constitution CorpusBuilder...")
 
     files_to_check = None
     if args.diff:
