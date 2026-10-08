@@ -8,6 +8,8 @@ output/
 
 # Dossiers à ignorer
 Prompts/
+Ressources/
+Examples/
 .vibe/
 
 # Ignorer les sous-dossiers de .specify sauf memory/
