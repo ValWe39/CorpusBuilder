@@ -1,6 +1,7 @@
 # Implementation Plan: Corpus Concaténation (CorpusBuilder)
 
-**Branch**: `002-corpus-concat` | **Date**: 2026-10-08 | **Spec**: [spec.md](spec.md)
+**Branch**: `002-corpus-concat` | **Date**: 2026-10-08
+**Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `/specs/001-corpus-concatenation/spec.md`
 

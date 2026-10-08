@@ -1,5 +1,5 @@
 ---
-description: "Liste des tâches pour l'implémentation de la concaténation de corpus"
+description: "Liste des tâches de la concaténation de corpus"
 ---
 
 # Tasks: Corpus Concaténation (CorpusBuilder)
@@ -70,7 +70,7 @@ stories. Aucune story ne peut démarrer avant la fin de cette phase.
   messages en français, résumé sur stdout, erreurs et avertissements
   sur stderr (contracts/cli.md).
 
-## Phase 3: User Story 1 - Concaténer des documents en un corpus unique (P1) — MVP
+## Phase 3: User Story 1 - Concaténer en corpus unique (P1) — MVP
 
 **Goal**: produire un couple corpus unique (JSON plat + matrice empilée)
 à partir d'un ou plusieurs dossiers de couples document valides.

@@ -118,7 +118,7 @@ traités.
 
 ---
 
-### User Story 3 - Réingérer des corpus existants (format de sortie) (Priority: P3)
+### User Story 3 - Réingérer des corpus (format de sortie) (Priority: P3)
 
 L'utilisateur possède déjà des corpus produits par l'outil (couple JSON plat /
 matrice NumPy, format de sortie) et souhaite les fusionner en un corpus plus
@@ -151,7 +151,7 @@ cohérent.
 
 ---
 
-### User Story 4 - Nommer et persister les sorties de façon fiable (Priority: P2)
+### User Story 4 - Nommer et persister les sorties (Priority: P2)
 
 Les sorties JSON et NumPy portent le **même titre à 9 chiffres** : 5 chiffres
 aléatoires générés à chaque exécution, suivis d'un numéro d'occurrence à 4
@@ -285,7 +285,7 @@ d'isolation des chemins ; sans impact sur la logique de collage.
 - **FR-008**: Un couple rejeté NE DOIT PAS être intégré au corpus de sortie NI
   interrompre le traitement des autres couples valides.
 
-#### Contrôles intercouples (dimension bloquante, nature des float non bloquante)
+#### Contrôles intercouples (dimension bloquante, nature float informative)
 
 - **FR-009**: L'outil DOIT vérifier que toutes les matrices à coller ont la même
   dimension de vecteur (P) ; en cas d'écart, l'outil DOIT échouer avant toute
