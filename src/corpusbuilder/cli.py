@@ -10,8 +10,49 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import assemble, counter, discovery, output, transform, validation
+from . import (
+    assemble,
+    counter,
+    dedup,
+    discovery,
+    infocorpus,
+    output,
+    split,
+    transform,
+    validation,
+)
 from .models import CorpusError, Couple, CoupleRejected
+
+CRITERES_INFO = ("all", "aut", "edit", "date")
+CRITERES_SPLIT = ("aut", "edit", "date")
+
+
+def _separer_critere(
+    elements: list[str], permis: tuple, defaut: str
+) -> tuple[list[str], str]:
+    """Sépare les cibles du critère positionnel optionnel.
+
+    `elements` est glouton (nargs="+") : si le dernier élément est un
+    critère permis et qu'il reste au moins une cible, il est détaché.
+    """
+    if len(elements) > 1 and elements[-1] in permis:
+        return elements[:-1], elements[-1]
+    return list(elements), defaut
+
+
+def _seuil_doublons(valeur: str) -> int:
+    """FR-005 : entier entre 60 et 100, sinon erreur d'usage (code 2)."""
+    try:
+        seuil = int(valeur)
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            f"seuil invalide : {valeur!r} — attendu : entier entre 60 et 100"
+        ) from None
+    if not 60 <= seuil <= 100:
+        raise argparse.ArgumentTypeError(
+            f"seuil hors bornes : {seuil} — attendu : entier entre 60 et 100"
+        )
+    return seuil
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -34,6 +75,19 @@ def build_parser() -> argparse.ArgumentParser:
         default="output",
         help="dossier de sortie (défaut : output)",
     )
+    parser.add_argument(
+        "--suppr-doublons",
+        action="store_true",
+        help="exclure les sources en doublon du corpus de sortie "
+        "(les entrées ne sont jamais modifiées)",
+    )
+    parser.add_argument(
+        "--seuil-doublons",
+        type=_seuil_doublons,
+        metavar="N",
+        default=None,
+        help="seuil de similarité de texte, entier 60 à 100 (défaut : 75)",
+    )
     return parser
 
 
@@ -42,11 +96,15 @@ def run(
     output_folder,
     counter_file=None,
     random_part=None,
+    suppr_doublons=False,
+    seuil_doublons=75,
 ) -> int:
     """Pipeline complet : scan, contrôles, collage, écriture.
 
     `counter_file` et `random_part` sont injectables pour les tests
     (isolation du compteur du développeur, titres déterministes).
+    Avec `suppr_doublons` : détection sur toutes les sources de
+    l'exécution puis exclusion avant le collage (FR-008, FR-010).
     """
     # FR-021 : lecture du compteur avant tout traitement — échec rapide,
     # aucune sortie, aucune consommation de numéro.
@@ -97,6 +155,16 @@ def run(
     if not couples:
         raise CorpusError("aucun couple valide en entrée — aucune sortie produite")
 
+    if suppr_doublons:
+        couples, resultat = dedup.appliquer_exclusion(couples, seuil_doublons)
+        for ligne in dedup.rapport(resultat, seuil_doublons):
+            print(ligne)
+        if not couples:
+            raise CorpusError(
+                "aucune source ne subsiste après exclusion des doublons "
+                "— aucune sortie produite"
+            )
+
     # FR-009 : dimension bloquante avant toute écriture ; FR-010 :
     # nature des float informative.
     validation.check_dimensions(couples)
@@ -119,11 +187,89 @@ def run(
     return 0
 
 
+def build_info_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="info-corpus",
+        description=(
+            "Auditer la composition d'un ou plusieurs corpus, "
+            "en lecture seule (auteurs, éditeurs, dates)."
+        ),
+    )
+    parser.add_argument(
+        "elements",
+        nargs="+",
+        metavar="CIBLE",
+        help="corpus (fichier ou dossier), puis critère optionnel",
+    )
+    return parser
+
+
+def main_info(argv: list[str] | None = None) -> int:
+    """`info-corpus` : 0 succès, 1 erreur, 2 usage (contracts/cli.md)."""
+    parser = build_info_parser()
+    args = parser.parse_args(argv)
+    cibles, critere = _separer_critere(args.elements, CRITERES_INFO, "all")
+    sources, signaux = infocorpus.collect_corpus(cibles)
+    infocorpus.afficher_signaux(signaux)
+    if not sources:
+        print("Erreur : aucun corpus valide en entrée.", file=sys.stderr)
+        return 1
+    for ligne in infocorpus.rapport(sources, critere):
+        print(ligne)
+    return 0
+
+
+def build_split_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="corpus-split",
+        description=(
+            "Découper un ou plusieurs corpus en sous-corpus "
+            "réingérables, par critère (auteurs, éditeurs, dates)."
+        ),
+    )
+    parser.add_argument(
+        "elements",
+        nargs="+",
+        metavar="CIBLE",
+        help="corpus (fichier ou dossier), puis critère optionnel",
+    )
+    parser.add_argument(
+        "--output-folder",
+        metavar="CHEMIN",
+        default="output",
+        help="dossier de sortie (défaut : output)",
+    )
+    return parser
+
+
+def main_split(argv: list[str] | None = None) -> int:
+    """`corpus-split` : 0 succès, 1 erreur, 2 usage (contracts/cli.md)."""
+    parser = build_split_parser()
+    args = parser.parse_args(argv)
+    cibles, critere = _separer_critere(args.elements, CRITERES_SPLIT, "edit")
+    try:
+        return split.run_split(cibles, critere, args.output_folder)
+    except CorpusError as exc:
+        print(f"Erreur : {exc}", file=sys.stderr)
+        return 1
+
+
 def main(argv: list[str] | None = None) -> int:
     """Point d'entrée : 0 succès, 1 erreur d'exécution, 2 erreur d'usage."""
     args = build_parser().parse_args(argv)
+    seuil = 75 if args.seuil_doublons is None else args.seuil_doublons
+    if args.seuil_doublons is not None and not args.suppr_doublons:
+        print(
+            "Avertissement : --seuil-doublons ignoré sans --suppr-doublons.",
+            file=sys.stderr,
+        )
     try:
-        return run(args.folders, args.output_folder)
+        return run(
+            args.folders,
+            args.output_folder,
+            suppr_doublons=args.suppr_doublons,
+            seuil_doublons=seuil,
+        )
     except CorpusError as exc:
         print(f"Erreur : {exc}", file=sys.stderr)
         return 1

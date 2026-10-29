@@ -13,6 +13,8 @@ dependencies = ["numpy>=1.26"]
 
 [project.scripts]
 corpus = "corpusbuilder.cli:main"
+info-corpus = "corpusbuilder.cli:main_info"
+corpus-split = "corpusbuilder.cli:main_split"
 
 [tool.setuptools.packages.find]
 where = ["src"]

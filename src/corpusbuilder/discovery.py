@@ -15,7 +15,7 @@ from .models import CoupleKind, CoupleRejected
 
 DOC_STEM_LEN = 18
 NPY_STEM_TOTAL = 23  # 18 caractères + "-" + 4 caractères (FR-005)
-CORPUS_TITLE = re.compile(r"^\d{9}$")
+CORPUS_TITLE = re.compile(r"^\d{9}(-[a-z0-9-]{1,10})?$")
 
 
 @dataclass

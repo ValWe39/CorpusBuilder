@@ -39,9 +39,11 @@ corpus Examples/Exemple-complement1 --output-folder /tmp/out1b \
   --suppr-doublons --seuil-doublons 100
 ```
 
-Attendu : à seuil 100, seules les paires à contexte strictement identique
-fusionnent — 30 groupes couvrant 66 sources, donc 196 sources conservées ;
-ce chiffre exact sert de garde-fou au calibrage (mesures de research.md).
+Attendu : à seuil 100, les 30 groupes à contexte strictement identique
+mesurés en recherche sont tous détectés (certains textes parfaitement
+identiques fusionnent aussi, à score 100) ; au total : 35 groupes,
+42 sources exclues, 190 sources conservées — garde-fou de calibrage
+(mesures de research.md).
 
 ## Scénario 2 — Déduplication des entrées corpus (P2)
 
@@ -102,10 +104,10 @@ corpus Examples/Exemple-complement1 --output-folder /tmp/d1 --suppr-doublons
 corpus Examples/Exemple-complement1 --output-folder /tmp/d2 --suppr-doublons
 ```
 
-Attendu : rapports stdout identiques au caractère près ; contenus des
-JSON identiques ; seules les parties aléatoire et occurrence des titres
-diffèrent, conformément au contrat 001 (FR-017) — c'est la seule source
-d'écart admise.
+Attendu : rapport de déduplication identique au caractère près (hors
+chemins de sortie) ; contenus des JSON identiques ; seules les parties
+aléatoire et occurrence des titres diffèrent, conformément au contrat
+001 (FR-017) — c'est la seule source d'écart admise.
 
 ## Scénario 6 — Garde-fous d'erreur
 
