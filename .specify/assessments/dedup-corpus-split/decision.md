@@ -9,10 +9,10 @@
 ## Scorecard
 
 | Critère | Note | Justification (résumée) |
-|---|---|---|
+| --- | --- | --- |
 | Problem validity | strong | 28 % de doublons mesurés dans complement1 |
 | Evidence strength | strong | Vérité terrain mesurée sur 232 + 283 documents |
-| Value vs. inaction | strong | Statu quo coûteux ; coût de build mesuré faible |
+| Value vs. inaction | strong | Statu quo coûteux ; coût de build faible |
 | Feasibility / appetite | strong | Approches déjà prototypées en recherche |
 | Strategic fit | strong | 100 % local et déterministe ; flux continu exigé |
 | Risk posture | adequate | 2 à 4 faux positifs à seuil 75, assumés |
@@ -70,7 +70,7 @@ Balayage de seuils sur les 96 paires de texte Jaccard ≥ 0,70, chaque paire
 classée (VRAI doublon / SUSPECT titres réels différents / INCERTAIN) :
 
 | Seuil | Paires | Vrais doublons | Suspects | Incertains |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 70 | 96 | 78 | 12 | 6 |
 | 74 | 85 | 74 | 5 | 6 |
 | **75 (défaut)** | **80** | **70** | **4** | **6** |
